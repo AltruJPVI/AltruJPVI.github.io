@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Altru</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Estilos adicionales */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa; /* Cambiamos el color de fondo a un gris más suave */
+    }
+    header {
+      background-color: #343a40; /* Cambiamos el color de fondo del encabezado a un gris oscuro */
+      color: #fff;
+      padding: 40px 20px; /* Aumentamos el espacio alrededor del título */
+      text-align: center;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+    header h1 {
+      font-size: 48px; /* Aumentamos el tamaño del título */
+      margin: 0; /* Eliminamos el margen superior e inferior del título */
+      letter-spacing: 2px; /* Añadimos un espacio entre letras para mayor impacto visual */
+      text-transform: uppercase; /* Convertimos el texto en mayúsculas */
+    }
+    .subtitle {
+      font-style: italic;
+      color: #ced4da; /* Cambiamos el color del subtítulo a un gris más claro */
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .formulario {
+      margin-bottom: 20px;
+      position: relative;
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      resize: none;
+      transition: border-color 0.3s ease;
+    }
+    textarea:focus {
+      border-color: #6c757d; /* Cambiamos el color del borde al enfocar */
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #6c757d; /* Cambiamos el color del botón */
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #495057; /* Cambiamos el color del botón al pasar el ratón */
+    }
+    .textos-guardados {
+      margin-bottom: 20px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .user-info {
+      margin-bottom: 20px;
+    }
+    .user-info label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .user-info input {
+      width: calc(100% - 22px);
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      transition: border-color 0.3s ease;
+    }
+    .user-info input:focus {
+      border-color: #6c757d; /* Cambiamos el color del borde al enfocar */
+    }
+    .message-container {
+      border-top: 1px solid #ccc;
+      padding-top: 20px;
+      margin-top: 20px;
+    }
+    .message {
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+    }
+    .message:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    .message-info {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 10px;
+    }
+    .message-text {
+      white-space: pre-line;
+    }
+    .fade-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Altru</h1>
+    <p class="subtitle">de: <em>altruistas por el mundo</em></p>
+    <div class="user-info">
+      <label for="username">Tu nombre:</label>
+      <input type="text" id="username">
+    </div>
+    <p>¿Necesitas algo?, ¿Gente para un proyecto?, ¿Aprender algo nuevo?, ¿Intercambiar algo que ya no usas? o quizás... quieres ofrecerte para dar clases particulares</p>
+    <p>Publica un anuncio con tus peticiones ¡Seguro que algún alumno ufv te puede echar un cable (o tú el que se la eche)! </p>
+  </header>
+
+  <div class="container">
+    <div class="formulario">
+      <textarea id="texto" rows="6" placeholder="Escribe tu mensaje aquí..." oninput="mostrarBotonBorrar()"></textarea>
+      <button onclick="guardarTexto()">Guardar</button>
+    </div>
+    <div id="textosGuardados" class="textos-guardados"></div>
+    <div id="nuevoCuadroTexto"></div>
+    <button id="botonBorrar" style="display: none;" onclick="borrarTextoGuardado()">Borrar texto guardado</button>
+  </div>
+
+  <script>
+    // Funciones JavaScript
+    function guardarTexto() {
+      var username = document.getElementById("username").value;
+      var texto = document.getElementById("texto").value;
+      var textoGuardado = localStorage.getItem("textoGuardado");
+      var horaActual = new Date().toLocaleString();
+
+      if (texto.trim() === "") {
+        alert("Por favor, escribe un mensaje antes de guardar.");
+        return;
+      }
+
+      if (textoGuardado) {
+        texto = textoGuardado + `<br>-------<br><strong>${username}</strong> - ${horaActual}:<br>` + texto;
+      } else {
+        texto = `<strong>${username}</strong> - ${horaActual}:<br>` + texto;
+      }
+
+      localStorage.setItem("textoGuardado", texto);
+      mostrarTextoGuardado();
+      document.getElementById("texto").value = ""; // Limpiar el cuadro de texto
+      alert("Texto guardado exitosamente.");
+      agregarNuevoCuadroTexto();
+      mostrarBotonBorrar();
+    }
+
+    function mostrarTextoGuardado() {
+      var textoGuardado = localStorage.getItem("textoGuardado");
+      var divTextosGuardados = document.getElementById("textosGuardados");
+      if (textoGuardado) {
+        divTextosGuardados.innerHTML = textoGuardado;
+      } else {
+        divTextosGuardados.innerHTML = "";
+      }
+    }
+
+    function agregarNuevoCuadroTexto() {
+      var nuevoCuadroTexto = document.createElement("textarea");
+      nuevoCuadroTexto.rows = 6;
+      nuevoCuadroTexto.placeholder = "Escribe tu respuesta aquí...";
+      
+      var botonGuardar = document.createElement("button");
+      botonGuardar.textContent = "Guardar";
+      botonGuardar.onclick = function() {
+        guardarRespuesta(nuevoCuadroTexto.value);
+      };
+      
+      var nuevoContenedor = document.getElementById("nuevoCuadroTexto");
+      nuevoContenedor.innerHTML = "<br>responder-> ";
+      nuevoContenedor.appendChild(nuevoCuadroTexto);
+      nuevoContenedor.appendChild(botonGuardar);
+    }
+
+    function guardarRespuesta(respuesta) {
+      var textoGuardado = localStorage.getItem("textoGuardado");
+      var username = document.getElementById("username").value;
+      var horaActual = new Date().toLocaleString();
+
+      if (respuesta.trim() === "") {
+        alert("Por favor, escribe una respuesta antes de guardar.");
+        return;
+      }
+
+      if (textoGuardado) {
+        textoGuardado += `<br><strong>${username}</strong> - ${horaActual}:<br>` + respuesta;
+      } else {
+        textoGuardado = `<strong>${username}</strong> - ${horaActual}:<br>` + respuesta;
+      }
+
+      localStorage.setItem("textoGuardado", textoGuardado);
+      mostrarTextoGuardado();
+      alert("Respuesta guardada exitosamente.");
+      document.getElementById("nuevoCuadroTexto").innerHTML = ""; // Limpiar el cuadro de texto después de guardar la respuesta
+      mostrarBotonBorrar();
+    }
+
+    function borrarTextoGuardado() {
+      localStorage.removeItem("textoGuardado");
+      mostrarTextoGuardado();
+      alert("Texto guardado ha sido borrado.");
+      document.getElementById("texto").value = ""; // Limpiar el cuadro de texto
+      ocultarBotonBorrar();
+    }
+
+    function mostrarBotonBorrar() {
+      var texto = document.getElementById("texto").value;
+      var botonBorrar = document.getElementById("botonBorrar");
+      if (texto === "JuanInesVicPablo4") {
+        botonBorrar.style.display = "block";
+      } else {
+        botonBorrar.style.display = "none";
+      }
+    }
+
+    function ocultarBotonBorrar() {
+      var botonBorrar = document.getElementById("botonBorrar");
+      botonBorrar.style.display = "none";
+    }
+
+    window.onload = function() {
+      mostrarTextoGuardado();
+      agregarNuevoCuadroTexto();
+      mostrarBotonBorrar();
+      document.body.classList.add("fade-in"); // Animación de aparición
+    };
+  </script>
+</body>
+</html>
+
